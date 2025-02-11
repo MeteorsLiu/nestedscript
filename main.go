@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"maps"
@@ -48,19 +47,17 @@ func main() {
 
 	pathMap := map[string][]string{}
 
-	br := bufio.NewScanner(strings.NewReader(changes))
-
 	identifyFileCnt := 0
 
-	for br.Scan() {
-		if strings.Contains(br.Text(), LLGOModuleIdentifyFile) {
+	for _, abs := range strings.Fields(changes) {
+		if strings.Contains(abs, LLGOModuleIdentifyFile) {
 			identifyFileCnt++
 			if identifyFileCnt > 1 {
 				panic("only one module in single pr")
 			}
 		}
-		baseDir := filepath.Dir(br.Text())
-		file := filepath.Base(br.Text())
+		baseDir := filepath.Dir(abs)
+		file := filepath.Base(abs)
 
 		// build a file path
 		pathMap[baseDir] = append(pathMap[baseDir], file)

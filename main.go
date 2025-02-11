@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -55,6 +56,15 @@ func handle(path string, sc *Config) {
 	cmd = exec.Command("llcppg", "llcppg.cfg")
 	cmd.Dir = absPath
 	cmd.Run()
+
+	os.Chdir(sc.Package.Name)
+	// done, rename all file, and upload to artifact
+	matches, _ := filepath.Glob("*.go")
+
+	for _, match := range matches {
+		fileName := strings.TrimSuffix(match, filepath.Ext(match))
+		os.Rename(match, fmt.Sprintf("%s_%s_%s.go", fileName, runtime.GOOS, runtime.GOARCH))
+	}
 
 }
 

@@ -61,6 +61,7 @@ func main() {
 		}
 		baseDir := filepath.Dir(br.Text())
 		file := filepath.Base(br.Text())
+
 		// build a file path
 		pathMap[baseDir] = append(pathMap[baseDir], file)
 	}
@@ -68,7 +69,7 @@ func main() {
 	if identifyFileCnt == 0 {
 		panic("no identify file!")
 	}
-
+	fmt.Println(pathMap)
 	// even though there's only one pending converting module,
 	// we still use loop for further uses
 	for path := range maps.Keys(pathMap) {

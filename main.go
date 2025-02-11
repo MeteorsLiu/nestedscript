@@ -31,7 +31,7 @@ func getCurrentWorkflow() *workflow {
 var (
 	cb              = context.TODO()
 	currentWorkflow = getCurrentWorkflow()
-	client          = github.NewClient(nil).WithAuthToken(os.Getenv("GITHUB_SECRET"))
+	client          = github.NewClient(nil).WithAuthToken(os.Getenv("GITHUB_TOKEN"))
 )
 
 func handle(path string, sc *Config) {

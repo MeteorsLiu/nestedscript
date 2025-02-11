@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"maps"
 	"os"
 	"os/exec"
@@ -39,19 +38,23 @@ var (
 func handle(path string, sc *Config) {
 	absPath, _ := filepath.Abs(path)
 
-	// install with conan
-	os.Chdir(path)
+	fmt.Println(absPath)
+
 	os.WriteFile("conanfile.txt", []byte(sc.conanFile()), 0755)
-	s, err := exec.Command("conan", "install", ".", "--build=missing").Output()
-	log.Println(string(s), err)
+	cmd := exec.Command("conan", "install", ".", "--build=missing")
+	cmd.Dir = absPath
+	cmd.Run()
+
 	os.Setenv("PKG_CONFIG_PATH", absPath)
 
 	// ok, we can generate
-	s, err = exec.Command("llcppcfg", sc.Package.Name).Output()
-	log.Println(string(s), err)
+	cmd = exec.Command("llcppcfg", sc.Package.Name)
+	cmd.Dir = absPath
+	cmd.Run()
 
-	s, err = exec.Command("llcppg").Output()
-	log.Println(string(s), err)
+	cmd = exec.Command("llcppg", "llcppg.cfg")
+	cmd.Dir = absPath
+	cmd.Run()
 
 }
 

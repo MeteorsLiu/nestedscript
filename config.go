@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
@@ -41,4 +42,16 @@ func Read(file string) *Config {
 	json.Unmarshal(b, &c)
 
 	return &c
+}
+
+func (c *Config) conanFile() string {
+	return fmt.Sprintf(`[requires]
+%s/%s
+	
+[options]
+*:shared=True
+
+[generators]
+PkgConfigDeps
+`, c.Package.Name, c.Package.Version)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -35,8 +36,18 @@ var (
 )
 
 func handle(path string, sc *Config) {
-	fmt.Println(currentWorkflow.Owner, currentWorkflow.Repo)
-	fmt.Println(client.Actions.ListWorkflowRunArtifacts(cb, currentWorkflow.Owner, currentWorkflow.Repo, currentWorkflow.RunID, &github.ListOptions{}))
+	absPath, _ := filepath.Abs(path)
+
+	// install with conan
+	os.Chdir(path)
+	os.WriteFile("conanfile.txt", []byte(sc.conanFile()), 0755)
+	exec.Command("conan", "install", ".", "--build=missing").Run()
+	os.Setenv("PKG_CONFIG_PATH", absPath)
+
+	// ok, we can generate
+	exec.Command("llcppcfg", sc.Package.Name).Run()
+	exec.Command("llcppg").Run()
+
 }
 
 func main() {

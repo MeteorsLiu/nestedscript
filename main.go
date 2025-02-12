@@ -62,6 +62,7 @@ func handle(path string, sc *Config) {
 	matches, _ := filepath.Glob("*.go")
 
 	for _, match := range matches {
+		fmt.Println(match)
 		fileName := strings.TrimSuffix(match, filepath.Ext(match))
 		os.Rename(match, fmt.Sprintf("%s_%s_%s.go", fileName, runtime.GOOS, runtime.GOARCH))
 	}

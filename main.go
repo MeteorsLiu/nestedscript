@@ -66,9 +66,9 @@ func handle(path string, sc *Config) {
 		fmt.Println(match)
 		copyFile(match)
 	}
-	os.Setenv("CURRENT_ARTIFACT_NAME", fmt.Sprintf("%s%s", sc.Package.Name, sc.Package.Version))
+	exec.Command("echo", fmt.Sprintf("llcppg_current_dir=%s%s", sc.Package.Name, sc.Package.Version), ">>", "$GITHUB_OUTPUT").Run()
+	exec.Command("echo", fmt.Sprintf("current_artifact_name=%s", absPath), ">>", "$GITHUB_OUTPUT").Run()
 
-	os.Setenv("LLCPPG_CURRENT_DIR", localPath)
 }
 
 func main() {

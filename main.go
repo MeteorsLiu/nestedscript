@@ -80,7 +80,7 @@ func handle(path string, sc *Config) {
 	must(err)
 
 	env.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s%s\n", sc.Package.Name, sc.Package.Version))
-	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s\n", absPath))
+	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s\n", localPath))
 	env.Close()
 }
 

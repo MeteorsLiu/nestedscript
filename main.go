@@ -44,7 +44,8 @@ func copyFile(originalFile string) {
 	defer newFile.Close()
 	must(err)
 
-	newFile.Write([]byte(fmt.Sprintf(`//go:build %s && %s\n`, runtime.GOOS, runtime.GOARCH)))
+	newFile.Write([]byte(fmt.Sprintf(`//go:build %s && %s
+`, runtime.GOOS, runtime.GOARCH)))
 
 	current, err := os.Open(originalFile)
 	defer current.Close()

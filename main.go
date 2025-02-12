@@ -13,10 +13,12 @@ import (
 
 const LLGOModuleIdentifyFile = "llpkg.cfg"
 
+var currentSuffix = runtime.GOOS + "_" + runtime.GOARCH
+
 func copyFile(originalFile string) {
 	fileName := strings.TrimSuffix(originalFile, filepath.Ext(originalFile))
 
-	newFile, err := os.Create(fmt.Sprintf("%s_%s_%s.go", fileName, runtime.GOOS, runtime.GOARCH))
+	newFile, err := os.Create(fmt.Sprintf("%s_%s.go", fileName, currentSuffix))
 	must(err)
 	defer newFile.Close()
 
@@ -25,8 +27,8 @@ func copyFile(originalFile string) {
 
 	current, err := os.Open(originalFile)
 	must(err)
-
-	defer current.Close()
+	// remove old file
+	defer os.Remove(originalFile)
 
 	io.Copy(newFile, current)
 }
@@ -57,9 +59,22 @@ func handle(path string, sc *Config) {
 	matches, _ := filepath.Glob(filepath.Join(localPath, "*.go"))
 
 	for _, match := range matches {
-		fmt.Println(match)
 		copyFile(match)
 	}
+
+	llpkgPath := filepath.Join(localPath, ".llpkg")
+	os.Mkdir(llpkgPath, 0755)
+
+	// be careful about llcppg config file here
+	os.Rename(
+		filepath.Join(localPath, "llcppg.cfg"),
+		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.cfg", currentSuffix)))
+	os.Rename(
+		filepath.Join(localPath, "llcppg.pub"),
+		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.pub", currentSuffix)))
+	os.Rename(
+		filepath.Join(localPath, "llcppg.symb.json"),
+		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.symb.json", currentSuffix)))
 
 	env, err := os.OpenFile(os.Getenv("GITHUB_ENV"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	must(err)
@@ -67,7 +82,6 @@ func handle(path string, sc *Config) {
 	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s%s\n", sc.Package.Name, sc.Package.Version))
 	env.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s\n", absPath))
 	env.Close()
-
 }
 
 func main() {

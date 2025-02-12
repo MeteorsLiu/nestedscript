@@ -79,8 +79,8 @@ func handle(path string, sc *Config) {
 	env, err := os.OpenFile(os.Getenv("GITHUB_ENV"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	must(err)
 
-	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s%s\n", sc.Package.Name, sc.Package.Version))
-	env.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s\n", absPath))
+	env.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s%s\n", sc.Package.Name, sc.Package.Version))
+	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s\n", absPath))
 	env.Close()
 }
 

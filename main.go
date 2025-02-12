@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"maps"
 	"os"
 	"os/exec"
@@ -36,6 +37,23 @@ var (
 	client          = github.NewClient(nil).WithAuthToken(os.Getenv("GH_TOKEN"))
 )
 
+func copyFile(originalFile string) {
+	fileName := strings.TrimSuffix(originalFile, filepath.Ext(originalFile))
+
+	newFile, err := os.Create(fmt.Sprintf("%s_%s_%s.go", fileName, runtime.GOOS, runtime.GOARCH))
+	defer newFile.Close()
+	must(err)
+
+	newFile.Write([]byte(fmt.Sprintf(`//go:build %s && %s`, runtime.GOOS, runtime.GOARCH)))
+
+	current, err := os.Open(originalFile)
+	defer current.Close()
+
+	must(err)
+
+	io.Copy(newFile, current)
+}
+
 func handle(path string, sc *Config) {
 	absPath, _ := filepath.Abs(path)
 
@@ -62,8 +80,7 @@ func handle(path string, sc *Config) {
 
 	for _, match := range matches {
 		fmt.Println(match)
-		fileName := strings.TrimSuffix(match, filepath.Ext(match))
-		os.Rename(match, fmt.Sprintf("%s_%s_%s.go", fileName, runtime.GOOS, runtime.GOARCH))
+		copyFile(match)
 	}
 
 }

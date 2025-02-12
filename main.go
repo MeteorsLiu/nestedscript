@@ -60,11 +60,10 @@ func handle(path string, sc *Config) {
 		fmt.Println(match)
 		copyFile(match)
 	}
-	outputs, err := os.Open(os.Getenv("GITHUB_ENV"))
-	must(err)
+	// export a local env in Go is impossible, so we use exec
+	exec.Command("export", fmt.Sprintf("LLCPPG_ABS_PATH=%s%s\n", sc.Package.Name, sc.Package.Version)).Run()
+	exec.Command("export", fmt.Sprintf("ARTIFACT_NAME=%s\n", absPath)).Run()
 
-	outputs.Write([]byte(fmt.Sprintf("LLCPPG_ABS_PATH=%s%s\n", sc.Package.Name, sc.Package.Version)))
-	outputs.Write([]byte(fmt.Sprintf("ARTIFACT_NAME=%s\n", absPath)))
 }
 
 func main() {

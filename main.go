@@ -60,10 +60,8 @@ func handle(path string, sc *Config) {
 		fmt.Println(match)
 		copyFile(match)
 	}
-	// export a local env in Go is impossible, so we use exec
-	exec.Command("export", fmt.Sprintf("LLCPPG_ABS_PATH=%s%s", sc.Package.Name, sc.Package.Version)).Run()
-	exec.Command("export", fmt.Sprintf("ARTIFACT_NAME=%s", absPath)).Run()
-
+	os.Setenv("LLCPPG_ABS_PATH", fmt.Sprintf("%s%s", sc.Package.Name, sc.Package.Version))
+	os.Setenv("ARTIFACT_NAME", absPath)
 }
 
 func main() {

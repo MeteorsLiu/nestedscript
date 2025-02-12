@@ -11,12 +11,6 @@ import (
 	"strings"
 )
 
-type workflow struct {
-	Repo  string
-	Owner string
-	RunID int64
-}
-
 const LLGOModuleIdentifyFile = "llpkg.cfg"
 
 func copyFile(originalFile string) {
@@ -66,11 +60,11 @@ func handle(path string, sc *Config) {
 		fmt.Println(match)
 		copyFile(match)
 	}
-	outputs, err := os.Open(os.Getenv("GITHUB_OUTPUT"))
+	outputs, err := os.Open(os.Getenv("GITHUB_ENV"))
 	must(err)
 
-	outputs.Write([]byte(fmt.Sprintf("llcppg_current_dir=%s%s\n", sc.Package.Name, sc.Package.Version)))
-	outputs.Write([]byte(fmt.Sprintf("current_artifact_name=%s\n", absPath)))
+	outputs.Write([]byte(fmt.Sprintf("LLCPPG_ABS_PATH=%s%s\n", sc.Package.Name, sc.Package.Version)))
+	outputs.Write([]byte(fmt.Sprintf("ARTIFACT_NAME=%s\n", absPath)))
 }
 
 func main() {

@@ -65,15 +65,16 @@ func handle(path string, sc *Config) {
 	llpkgPath := filepath.Join(localPath, ".llpkg")
 	os.Mkdir(llpkgPath, 0755)
 
-	// be careful about llcppg config file here
+	// be careful about the paths of llcppg config file here
+	// llcppg.cfg/symb.json is in absPath, while pub is in
 	os.Rename(
-		filepath.Join(localPath, "llcppg.cfg"),
+		filepath.Join(absPath, "llcppg.cfg"),
 		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.cfg", currentSuffix)))
 	os.Rename(
 		filepath.Join(localPath, "llcppg.pub"),
 		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.pub", currentSuffix)))
 	os.Rename(
-		filepath.Join(localPath, "llcppg.symb.json"),
+		filepath.Join(absPath, "llcppg.symb.json"),
 		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.symb.json", currentSuffix)))
 
 	env, err := os.OpenFile(os.Getenv("GITHUB_ENV"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"maps"
@@ -9,10 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
-
-	"github.com/google/go-github/v69/github"
 )
 
 type workflow struct {
@@ -23,34 +19,20 @@ type workflow struct {
 
 const LLGOModuleIdentifyFile = "llpkg.cfg"
 
-func getCurrentWorkflow() *workflow {
-	repo := os.Getenv("GITHUB_REPOSITORY")
-	owner := os.Getenv("GITHUB_REPOSITORY_OWNER")
-	runid, _ := strconv.ParseInt(os.Getenv("GITHUB_RUN_ID"), 10, 64)
-
-	return &workflow{Repo: repo, Owner: owner, RunID: runid}
-}
-
-var (
-	cb              = context.TODO()
-	currentWorkflow = getCurrentWorkflow()
-	client          = github.NewClient(nil).WithAuthToken(os.Getenv("GH_TOKEN"))
-)
-
 func copyFile(originalFile string) {
 	fileName := strings.TrimSuffix(originalFile, filepath.Ext(originalFile))
 
 	newFile, err := os.Create(fmt.Sprintf("%s_%s_%s.go", fileName, runtime.GOOS, runtime.GOARCH))
-	defer newFile.Close()
 	must(err)
+	defer newFile.Close()
 
 	newFile.Write([]byte(fmt.Sprintf(`//go:build %s && %s
 `, runtime.GOOS, runtime.GOARCH)))
 
 	current, err := os.Open(originalFile)
-	defer current.Close()
-
 	must(err)
+
+	defer current.Close()
 
 	io.Copy(newFile, current)
 }
@@ -76,14 +58,17 @@ func handle(path string, sc *Config) {
 	cmd.Dir = absPath
 	cmd.Run()
 
+	localPath := filepath.Join(absPath, sc.Package.Name)
 	// done, rename all file, and upload to artifact
-	matches, _ := filepath.Glob(filepath.Join(absPath, sc.Package.Name, "*.go"))
+	matches, _ := filepath.Glob(filepath.Join(localPath, "*.go"))
 
 	for _, match := range matches {
 		fmt.Println(match)
 		copyFile(match)
 	}
+	os.Setenv("CURRENT_ARTIFACT_NAME", fmt.Sprintf("%s%s", sc.Package.Name, sc.Package.Version))
 
+	os.Setenv("LLCPPG_CURRENT_DIR", localPath)
 }
 
 func main() {

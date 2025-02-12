@@ -71,11 +71,11 @@ func handle(path string, sc *Config) {
 		filepath.Join(absPath, "llcppg.cfg"),
 		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.cfg", currentSuffix)))
 	os.Rename(
-		filepath.Join(localPath, "llcppg.pub"),
-		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.pub", currentSuffix)))
-	os.Rename(
 		filepath.Join(absPath, "llcppg.symb.json"),
 		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.symb.json", currentSuffix)))
+	os.Rename(
+		filepath.Join(localPath, "llcppg.pub"),
+		filepath.Join(llpkgPath, fmt.Sprintf("llcppg_%s.pub", currentSuffix)))
 
 	env, err := os.OpenFile(os.Getenv("GITHUB_ENV"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	must(err)

@@ -58,7 +58,7 @@ func handle(path string, sc *Config) {
 	cmd.Run()
 
 	// done, rename all file, and upload to artifact
-	matches, _ := filepath.Glob(filepath.Join(absPath, "*.go"))
+	matches, _ := filepath.Glob(filepath.Join(absPath, sc.Package.Name, "*.go"))
 
 	for _, match := range matches {
 		fmt.Println(match)

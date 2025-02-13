@@ -42,7 +42,10 @@ func handle(path string, sc *Config) {
 
 	// be careful about the paths of llcppg config file here
 	// llcppg.cfg/symb.json is in absPath, while pub is in
-
+	os.Rename(
+		filepath.Join(absPath, "llcppg.cfg"),
+		filepath.Join(localPath, "llcppg.cfg"),
+	)
 	os.Rename(
 		filepath.Join(absPath, "llcppg.symb.json"),
 		filepath.Join(llpkgPath, "llcppg.symb.json"))

@@ -59,6 +59,7 @@ func handle(path string, sc *Config) {
 	// prevent duplicate name
 	env.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s%s_%s\n", sc.Package.Name, sc.Package.Version, currentSuffix))
 	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s\n", localPath))
+	env.WriteString(fmt.Sprintf("LLCPPG_PATH=%s\n", filepath.Join(path, sc.Package.Name)))
 
 	env.Close()
 }

@@ -56,10 +56,17 @@ func handle(path string, sc *Config) {
 	env, err := os.OpenFile(os.Getenv("GITHUB_ENV"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	must(err)
 
+	outputs, err := os.OpenFile(os.Getenv("GITHUB_OUTPUT"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	must(err)
+
 	// prevent duplicate name
 	env.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s%s_%s\n", sc.Package.Name, sc.Package.Version, currentSuffix))
 	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s\n", localPath))
+
+	outputs.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s%s_%s\n", sc.Package.Name, sc.Package.Version, currentSuffix))
+	outputs.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s\n", localPath))
 	env.Close()
+	outputs.Close()
 }
 
 func main() {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"maps"
 	"os"
@@ -14,7 +15,7 @@ const LLGOModuleIdentifyFile = "llpkg.cfg"
 
 var currentSuffix = runtime.GOOS + "_" + runtime.GOARCH
 
-func handle(path string, sc *Config) {
+func generate(path string, sc *Config) {
 	absPath, _ := filepath.Abs(path)
 
 	fmt.Println(absPath)
@@ -35,6 +36,7 @@ func handle(path string, sc *Config) {
 	cmd.Dir = absPath
 	cmd.Run()
 
+	fmt.Println(exec.Command("ls", absPath).Output())
 	localPath := filepath.Join(absPath, sc.Package.Name)
 	dirs, err := os.ReadDir(localPath)
 	must(err)
@@ -65,11 +67,14 @@ func handle(path string, sc *Config) {
 	env.WriteString(fmt.Sprintf("ARTIFACT_NAME=%s%s_%s\n", sc.Package.Name, sc.Package.Version, currentSuffix))
 	env.WriteString(fmt.Sprintf("LLCPPG_ABS_PATH=%s\n", absPath))
 	env.WriteString(fmt.Sprintf("LLCPPG_PATH=%s\n", path))
-
 	env.Close()
 }
 
 func main() {
+	var genVersion bool
+	flag.BoolVar(&genVersion, "version", false, "Gen version")
+	flag.Parse()
+
 	changes := os.Getenv("ALL_CHANGED_FILES")
 	if changes == "" {
 		panic("cannot find changes file!")
@@ -102,7 +107,7 @@ func main() {
 	for path := range maps.Keys(pathMap) {
 		cfg := Read(filepath.Join(path, LLGOModuleIdentifyFile))
 
-		handle(path, cfg)
+		generate(path, cfg)
 	}
 
 	fmt.Println(pathMap)

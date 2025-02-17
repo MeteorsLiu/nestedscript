@@ -23,18 +23,21 @@ func generate(path string, sc *Config) {
 	os.WriteFile("conanfile.txt", []byte(sc.conanFile()), 0755)
 	cmd := exec.Command("conan", "install", ".", "--build=missing")
 	cmd.Dir = absPath
-	cmd.Run()
+	output, err := cmd.CombinedOutput()
+	fmt.Println(string(output), err)
 
 	os.Setenv("PKG_CONFIG_PATH", absPath)
 
 	// ok, we can generate
 	cmd = exec.Command("llcppcfg", sc.Package.Name)
 	cmd.Dir = absPath
-	cmd.Run()
+	output, err = cmd.CombinedOutput()
+	fmt.Println(string(output), err)
 
 	cmd = exec.Command("llcppg", "llcppg.cfg")
 	cmd.Dir = absPath
-	cmd.Run()
+	output, err = cmd.CombinedOutput()
+	fmt.Println(string(output), err)
 
 	fmt.Println(exec.Command("ls", absPath).Output())
 	localPath := filepath.Join(absPath, sc.Package.Name)

@@ -20,6 +20,8 @@ func generate(path string, sc *Config) {
 
 	fmt.Println(absPath)
 
+	exec.Command("conan", "profile", "detect").Run()
+
 	os.WriteFile(filepath.Join(absPath, "conanfile.txt"), []byte(sc.conanFile()), 0755)
 	cmd := exec.Command("conan", "install", ".", "--build=missing")
 	cmd.Dir = absPath

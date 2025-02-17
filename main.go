@@ -20,7 +20,7 @@ func generate(path string, sc *Config) {
 
 	fmt.Println(absPath)
 
-	os.WriteFile("conanfile.txt", []byte(sc.conanFile()), 0755)
+	os.WriteFile(filepath.Join(absPath, "conanfile.txt"), []byte(sc.conanFile()), 0755)
 	cmd := exec.Command("conan", "install", ".", "--build=missing")
 	cmd.Dir = absPath
 	output, err := cmd.CombinedOutput()
